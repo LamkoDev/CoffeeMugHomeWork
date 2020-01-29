@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Strona główna";
+}
+@model WebApplicationProduct.Models.ProductCreateRequestDto
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+    <p>Dodaj nowy produkt</p>
+    <p>Nazwa: @Html.TextBoxFor(product => product.Name) </p>
+    <p>Cena: @Html.TextBoxFor(product => product.Price)</p>
+    <input type="submit" value="Zatwierdz" />
+}
+<!--@Html.ActionLink("Dodaj produkt", "AddProduct")-->
+<br />
+<br />
+<div class="text-center">
+    <h1 class="display-4">Produkty</h1>
+</div>
+@if (ViewBag.Products != null)
+{
+    @foreach (var item in ViewBag.Products)
+    {
+        <span>Id: @item.Id </span>
+        <span>Nazwa: @item.Name </span>
+        <span>Cena: @item.Price </span>
+        <br />
+    }
+}
+
+

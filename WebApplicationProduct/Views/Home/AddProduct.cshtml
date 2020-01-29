@@ -1,0 +1,24 @@
+﻿@model WebApplicationProduct.Models.ProductCreateRequestDto
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="~/css/Styl.css" />
+    <title>Dodawanie produktu</title>
+</head>
+<body>
+
+    @using (Html.BeginForm())
+    {
+            <p>Dodano produkt</p>
+            <p>Id: @Model.Id</p>
+            <p>Nazwa: @Model.Name</p>
+            <p>Cena: @Model.Price</p>
+    }
+    @Html.ActionLink("Wróć", "Index")
+
+</body>
+</html>
