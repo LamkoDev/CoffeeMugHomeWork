@@ -1,0 +1,1 @@
+﻿SELECT Id FROM Products WHERE Name='Laptop' AND Price=4200;

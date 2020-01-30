@@ -9,9 +9,6 @@ namespace WebApplicationProduct.Models
 {
     public class ProductCreateRequestDto
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
         [Required(ErrorMessage = "Prosze podać nazwę")]
         public string Name { get; set; }
         [RegularExpression("(^[1-9]+[0-9]*)", ErrorMessage = "Enter a valid decimal number")]

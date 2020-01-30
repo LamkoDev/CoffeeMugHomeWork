@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Strona główna";
+}
+@model WebApplicationProduct.Models.Product
+
+
+@Html.ActionLink("Dodaj produkt", "AddProduct")
+<br />
+<br />
+<div class="text-center">
+    <h1 class="display-4">Produkty</h1>
+</div>
+@if (ViewBag.Products != null)
+{
+    @foreach (var item in ViewBag.Products)
+    {
+        <span>Id: @item.Id </span>
+        <span>Nazwa: @item.Name </span>
+        <span>Cena: @item.Price </span>
+        <br />
+    }
+}
+
+

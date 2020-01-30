@@ -10,13 +10,13 @@
     <title>Dodawanie produktu</title>
 </head>
 <body>
-
     @using (Html.BeginForm())
     {
-            <p>Dodano produkt</p>
-            <p>Id: @Model.Id</p>
-            <p>Nazwa: @Model.Name</p>
-            <p>Cena: @Model.Price</p>
+        @Html.ValidationSummary()
+        <p>Dodaj nowy produkt</p>
+        <p>Nazwa: @Html.TextBoxFor(product => product.Name) </p>
+        <p>Cena: @Html.TextBoxFor(product => product.Price)</p>
+        <input type="submit" value="Zatwierdz" />
     }
     @Html.ActionLink("Wróć", "Index")
 

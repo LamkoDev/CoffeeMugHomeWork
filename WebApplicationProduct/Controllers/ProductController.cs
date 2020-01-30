@@ -10,105 +10,76 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Data.SQLite;
+using System.Data.SqlClient;
 
 namespace WebApplicationProduct.Controllers
 {
     public class ProductController : Controller//, IModelBinder
     {
+
         public IActionResult Index()
         {
-            ViewBag.Products = Get();
-            CreateDb();
-            return View();
-        }
 
-        [HttpPost]
-        public object Index(ProductCreateRequestDto request)
-        {
-    
+            ProductCreateRequestDto request = new ProductCreateRequestDto();
+            request.Name = "Pralka";
+            request.Price = 1200.25M;
+
             ViewBag.Products = Get();
-            if (!ModelState.IsValid)
-            {
-                Trace.WriteLine("Request BAD!!");
-                return View("Index");
-            }
-            Trace.WriteLine("Name: "+request.Name+" Price: "+request.Price);
-            Trace.WriteLine("Request OK");
-            request.Id = Post(request);
-            Trace.WriteLine("GUID: "+ request.Id);
-            return View("AddProduct", request);
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            Trace.WriteLine("index");
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            // Post(request);
+
+            return View();
         }
         [HttpPost]
         public Guid Post(ProductCreateRequestDto request)
         {
-            Product product = new Product(request.Name,request.Price);
-            return product.GetId();
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            Trace.WriteLine(request.Name);
+            Trace.WriteLine(request.Price);
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            DataBaseBridge dataBase = new DataBaseBridge();
+            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
+                                       "Database = CoffeeMugHomeWork; " +
+                                       "User Id = Visual; " +
+                                       "Password = 1231;";
+            dataBase.UseSqlDbImplementation(connectionString);
+            return dataBase.AddProduct(request);
         }
+
+        
         public List<Product> Get()
         {
-            try
-            {
-                string cs = @"URI=file:C:\Users\Xeni\Desktop\test.db";
-                using var con = new SQLiteConnection(cs);
-                con.Open();
-                string stm = "SELECT * FROM products LIMIT 5";
-                using var cmd = new SQLiteCommand(stm, con);
-                using SQLiteDataReader rdr = cmd.ExecuteReader();
-                while (rdr.Read())
-                {
-                    Trace.WriteLine($"{rdr.GetInt32(0)} {rdr.GetString(1)} {rdr.GetInt32(2)}");
-                }
-                con.Close();
-            }
-            catch (Exception ex)
-            {
-
-                Trace.WriteLine(ex);
-            }
-           
-            return MakeFakeProducts();
+            DataBaseBridge dataBase = new DataBaseBridge();
+            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
+                                       "Database = CoffeeMugHomeWork; " +
+                                       "User Id = Visual; " +
+                                       "Password = 1231;";
+            dataBase.UseSqlDbImplementation(connectionString);
+            return dataBase.GetProducts();
         }
 
-        public void CreateDb()
-        {
-            string cs = @"URI=file:C:\Users\Xeni\Desktop\test.db";
-            using var con = new SQLiteConnection(cs);
-            con.Open();
-            using var cmd = new SQLiteCommand(con);
 
-            cmd.CommandText = "DROP TABLE IF EXISTS products";
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = @"CREATE TABLE products(id INTEGER PRIMARY KEY,
-                    name TEXT, price INT)";
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = "INSERT INTO products(name, price) VALUES('Audi',52642)";
-            cmd.ExecuteNonQuery();
-            con.Close();
-        }
-
-        public List<Product> MakeFakeProducts()
-        {
-            List<Product> products = new List<Product>();
-
-            Product product0 = new Product("Kawa", 2);
-            Product product1 = new Product("Iphone", 1500);
-            Product product2 = new Product("Samsung", 1900);
-            products = new List<Product>();
-            products.Add(product0);
-            products.Add(product1);
-            products.Add(product2);
-            return products;
-        }
 
         [HttpGet]
         public ViewResult AddProduct()
         {
             return View();
         }
-        public ViewResult AddProduct(ProductCreateRequestDto request)
+        public Guid AddProduct(ProductCreateRequestDto request)
         {
-
-            return View("Index");
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            Trace.WriteLine(request.Name);
+            Trace.WriteLine(request.Price);
+            Trace.WriteLine("");
+            Trace.WriteLine("");
+            return Post(request);
         }
 
 

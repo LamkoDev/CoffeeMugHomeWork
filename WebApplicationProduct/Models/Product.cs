@@ -29,5 +29,9 @@ namespace WebApplicationProduct.Models
         {
             return Id;
         }
+        public void SetId(Guid id)
+        {
+            this.Id = id;
+        }
     }
 }
