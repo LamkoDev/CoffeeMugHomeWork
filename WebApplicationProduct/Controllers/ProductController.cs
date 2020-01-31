@@ -11,92 +11,114 @@ using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Data.SQLite;
 using System.Data.SqlClient;
+using System.Net;
+
 
 namespace WebApplicationProduct.Controllers
 {
+    [Produces("application/json")]
     public class ProductController : Controller//, IModelBinder
     {
 
         public IActionResult Index()
         {
-
-            ProductCreateRequestDto request = new ProductCreateRequestDto();
-            request.Name = "Pralka";
-            request.Price = 1200.25M;
-
             ViewBag.Products = Get();
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            Trace.WriteLine("index");
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            // Post(request);
-
             return View();
         }
-        [HttpPost]
-        public Guid Post(ProductCreateRequestDto request)
-        {
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            Trace.WriteLine(request.Name);
-            Trace.WriteLine(request.Price);
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            DataBaseBridge dataBase = new DataBaseBridge();
-            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
-                                       "Database = CoffeeMugHomeWork; " +
-                                       "User Id = Visual; " +
-                                       "Password = 1231;";
-            dataBase.UseSqlDbImplementation(connectionString);
-            return dataBase.AddProduct(request);
-        }
-
-        
-        public List<Product> Get()
-        {
-            DataBaseBridge dataBase = new DataBaseBridge();
-            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
-                                       "Database = CoffeeMugHomeWork; " +
-                                       "User Id = Visual; " +
-                                       "Password = 1231;";
-            dataBase.UseSqlDbImplementation(connectionString);
-            return dataBase.GetProducts();
-        }
-
+        DataBaseBridge dataBase = new DataBaseBridge();
 
 
         [HttpGet]
-        public ViewResult AddProduct()
+        [Route("~/GetAll")]
+        public List<Product> Get()
+        {
+            Trace.WriteLine("Get");
+            DataBaseBridge dataBase = CreateAndSetDb();
+            return dataBase.GetProducts();
+        }
+
+        [Route("~/Get")]
+        public Product Get(Guid id)
+        {
+            Trace.WriteLine("Get id");
+            DataBaseBridge dataBase = CreateAndSetDb();
+            return dataBase.GetProduct(id);
+        }
+        [HttpPost]
+        [Route("~/Post")]
+        public IActionResult Post(ProductCreateRequestDto request)
+        {
+            if (ModelState.IsValid)
+            {
+            Trace.WriteLine("Post");
+                DataBaseBridge dataBase = CreateAndSetDb();
+                Response.StatusCode = 200;
+                return Content(dataBase.AddProduct(request).ToString());
+            }
+            Response.StatusCode = 400;
+            return Content("Invalid request !!!");
+        }
+
+        [HttpPut]
+        [Route("~/Put")]
+        public IActionResult Put(ProductUpdateRequestDto request)
+        {
+            if (ModelState.IsValid)
+            {
+                Trace.WriteLine("Put");
+                DataBaseBridge dataBase = CreateAndSetDb();
+                dataBase.Update(request);
+                return RedirectToAction("Index");
+            }
+            Response.StatusCode = 400;
+            return Content("Invalid request !!!");
+        }
+
+
+        [HttpDelete]
+        [Route("~/Delete")]
+        public IActionResult Delete(Guid id)
+        {
+            Trace.WriteLine("Delete");
+            DataBaseBridge dataBase = CreateAndSetDb();
+            dataBase.Delete(id);
+            return RedirectToAction("Index");
+        }
+        private DataBaseBridge CreateAndSetDb()
+        {
+            DataBaseBridge dataBase = new DataBaseBridge();
+            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
+                                       "Database = CoffeeMugHomeWork; " +
+                                       "User Id = Visual; " +
+                                       "Password = 1231;";
+            dataBase.UseSqlDbImplementation(connectionString);
+            return dataBase;
+        }
+        [HttpGet]
+        public ViewResult AddForm()
         {
             return View();
         }
-        public Guid AddProduct(ProductCreateRequestDto request)
+        public ViewResult AddForm(ProductCreateRequestDto request)
         {
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            Trace.WriteLine(request.Name);
-            Trace.WriteLine(request.Price);
-            Trace.WriteLine("");
-            Trace.WriteLine("");
-            return Post(request);
+            Product product = new Product(request.Name, request.Price);
+            DataBaseBridge dataBase = CreateAndSetDb();
+            product.Id = dataBase.AddProduct(request);
+            return View("ProductAdded", product);
         }
-
-
-
-
-
-        public IActionResult About()
+        public ViewResult ProductAdded(Product request)
+        {
+            return View(request);
+        }
+            public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
-
             return View();
         }
 

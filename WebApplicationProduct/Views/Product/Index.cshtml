@@ -3,22 +3,51 @@
 }
 @model WebApplicationProduct.Models.Product
 
-
-@Html.ActionLink("Dodaj produkt", "AddProduct")
+@Html.ActionLink("Dodaj produkt", "AddForm")
 <br />
 <br />
 <div class="text-center">
     <h1 class="display-4">Produkty</h1>
 </div>
-@if (ViewBag.Products != null)
+
+@for (int i = 0; i < ViewBag.Products.Count; i++)
 {
-    @foreach (var item in ViewBag.Products)
-    {
-        <span>Id: @item.Id </span>
-        <span>Nazwa: @item.Name </span>
-        <span>Cena: @item.Price </span>
-        <br />
-    }
+    <tr>
+        <td>
+            <span>Id: @ViewBag.Products[i].Id </span>
+            <span>Nazwa: @ViewBag.Products[i].Name </span>
+            <span>Cena: @ViewBag.Products[i].Price </span>
+            @Html.ActionLink("Usuń", "Delete", "Product", new { id = ViewBag.Products[i].Id })
+            <br />
+        </td>
+    </tr>
 }
 
 
+<br />
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <input type="button" value="Ajax test" class="btn btn-default" onclick="ajaxTest();" />
+</form>
+
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript">
+    function ajaxTest() {
+        console.log("Entered method");
+         $.ajax({
+            type: "POST",
+            url: 'Delete', 
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json"
+        }).done(function (data) {
+            console.log(data.result);
+        })
+
+    }
+    </script>
