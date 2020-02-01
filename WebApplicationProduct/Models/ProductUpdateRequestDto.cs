@@ -15,7 +15,8 @@ namespace WebApplicationProduct.Models
         [Required(ErrorMessage = "Prosze podać nazwę")]
         [StringLength(100, MinimumLength = 3)]
         public string NewName { get; set; }
-        [RegularExpression("(^[1-9]+[0-9]*)", ErrorMessage = "Enter a valid decimal number")]
+
+        [RegularExpression(@"^[0-9]*\,?[0-9]+$", ErrorMessage = "Enter a valid price")]
         [Required(ErrorMessage = "Prosze podać cenę")]
         public decimal NewPrice { get; set; }
     }

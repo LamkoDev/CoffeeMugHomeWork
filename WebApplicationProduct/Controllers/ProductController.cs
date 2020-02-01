@@ -19,7 +19,6 @@ namespace WebApplicationProduct.Controllers
     [Produces("application/json")]
     public class ProductController : Controller//, IModelBinder
     {
-
         public IActionResult Index()
         {
             ViewBag.Products = Get();
@@ -36,7 +35,7 @@ namespace WebApplicationProduct.Controllers
             DataBaseBridge dataBase = CreateAndSetDb();
             return dataBase.GetProducts();
         }
-
+        [HttpGet]
         [Route("~/Get")]
         public Product Get(Guid id)
         {
@@ -84,7 +83,15 @@ namespace WebApplicationProduct.Controllers
             dataBase.Delete(id);
             return RedirectToAction("Index");
         }
-        private DataBaseBridge CreateAndSetDb()
+        public IActionResult DeleteProduct(Guid id)
+        {
+            Trace.WriteLine("Delete");
+            DataBaseBridge dataBase = CreateAndSetDb();
+            dataBase.Delete(id);
+            return RedirectToAction("Index");
+        }
+
+            private DataBaseBridge CreateAndSetDb()
         {
             DataBaseBridge dataBase = new DataBaseBridge();
             string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
@@ -115,7 +122,35 @@ namespace WebApplicationProduct.Controllers
             ViewData["Message"] = "Your application description page.";
             return View();
         }
+        [HttpGet]
+        public ViewResult EditProduct(Guid id)
+        {
+            Trace.WriteLine("Edit");
+            DataBaseBridge dataBase = CreateAndSetDb();
+            Product product = dataBase.GetProduct(id);
+            ProductUpdateRequestDto request = new ProductUpdateRequestDto();
+            request.Id = product.Id;
+            request.NewName = product.Name;
+            request.NewPrice = product.Price;
+            return View(request);
+        }
 
+        public ViewResult EditProduct(ProductUpdateRequestDto request)
+        {
+            if (ModelState.IsValid)
+            {
+                Trace.WriteLine("doUpdate");
+                DataBaseBridge dataBase = CreateAndSetDb();
+                dataBase.Update(request);
+                return View("ProductUpdated", request);
+            }
+            Trace.WriteLine("Not valid");
+            return View();
+        }
+        public ViewResult ProductUpdated(ProductUpdateRequestDto updatedProduct)
+        {
+            return View("ProductUpdated", updatedProduct);
+        }
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";

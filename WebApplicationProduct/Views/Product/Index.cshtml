@@ -17,7 +17,9 @@
             <span>Id: @ViewBag.Products[i].Id </span>
             <span>Nazwa: @ViewBag.Products[i].Name </span>
             <span>Cena: @ViewBag.Products[i].Price </span>
-            @Html.ActionLink("Usuń", "Delete", "Product", new { id = ViewBag.Products[i].Id })
+            @Html.ActionLink("Usuń", "DeleteProduct", "Product", new { id = ViewBag.Products[i].Id })
+            @Html.ActionLink("Edytuj", "EditProduct", "Product", new { id = ViewBag.Products[i].Id })
+
             <br />
         </td>
     </tr>
@@ -26,28 +28,4 @@
 
 <br />
 
-<form method="post">
-    @Html.AntiForgeryToken()
-    <input type="button" value="Ajax test" class="btn btn-default" onclick="ajaxTest();" />
-</form>
 
-
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript">
-    function ajaxTest() {
-        console.log("Entered method");
-         $.ajax({
-            type: "POST",
-            url: 'Delete', 
-            contentType: "application/json; charset=utf-8",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
-            dataType: "json"
-        }).done(function (data) {
-            console.log(data.result);
-        })
-
-    }
-    </script>

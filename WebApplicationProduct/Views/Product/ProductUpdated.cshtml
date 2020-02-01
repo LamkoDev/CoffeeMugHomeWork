@@ -1,0 +1,12 @@
+﻿@model WebApplicationProduct.Models.ProductUpdateRequestDto
+@{
+    ViewData["Title"] = "ProductUpdated";
+}
+
+<h1>ProductUpdated</h1>
+
+<span>Id: @Model.Id </span>
+<span>Nazwa: @Model.NewName </span>
+<span>Cena: @Model.NewPrice</span>
+<br />
+@Html.ActionLink("Wróć", "Index")

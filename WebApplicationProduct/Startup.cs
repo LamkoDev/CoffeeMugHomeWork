@@ -55,18 +55,7 @@ namespace WebApplicationProduct
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Product}/{action=Index}/{id?}");
-                /*
-                endpoints.MapControllerRoute(
-                name: "DeleteProduct",
-                pattern: "{controller=Product}/{action=Delete}/{id?}");*/
             });
-           /*app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Product}/{action=Index}/{id?}");
-            });*/
-
         }
     }
 }

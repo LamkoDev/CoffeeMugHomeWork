@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewData["Title"] = "EditProduct";
+}
+@model WebApplicationProduct.Models.ProductUpdateRequestDto
+<h1>EditProduct</h1>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+    <p>Dodaj nowy produkt</p>
+    <p>Nazwa: @Html.TextBoxFor(product => product.NewName) </p>
+    <p>Cena: @Html.TextBoxFor(product => product.NewPrice)</p>
+    <input type="submit" value="Zatwierdz" />
+}
+@Html.ActionLink("Wróć", "Index")

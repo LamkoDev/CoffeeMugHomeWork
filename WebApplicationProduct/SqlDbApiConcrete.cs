@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using WebApplicationProduct.Models;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace WebApplicationProduct
 {
@@ -68,13 +69,13 @@ namespace WebApplicationProduct
         }
         private void addTransaction(ProductCreateRequestDto request)
         {
-            String addProductCommand = "INSERT INTO Products (Id,Name,Price) VALUES(default, '" + request.Name + "', " + request.Price + ")";
+            String addProductCommand = "INSERT INTO Products (Id,Name,Price) VALUES(default, '" + request.Name + "', " + FormatWithComma(request.Price) + ")";
             CreateAndCommitTransaction(addProductCommand);
         }
         private Guid GetProductId(ProductCreateRequestDto request)
         {
             Guid id = new Guid();
-            String selectAddedIdCommand = "SELECT Id FROM Products WHERE Name='" + request.Name + "' AND Price=" + request.Price + "; ";
+            String selectAddedIdCommand = "SELECT Id FROM Products WHERE Name='" + request.Name + "' AND Price=" + FormatWithComma(request.Price) + "; ";
             using (SqlCommand command = new SqlCommand(selectAddedIdCommand, sqlConnection))
                 using (SqlDataReader dr = command.ExecuteReader())
                 {
@@ -89,11 +90,12 @@ namespace WebApplicationProduct
         }
         public void UpdateProduct(ProductUpdateRequestDto request)
         {
-            string updateProductCommand = "UPDATE Products SET Name = '" + request.NewName + "', Price = " + request.NewPrice + " WHERE Id='" + request.Id + "';";
+            string updateProductCommand = "UPDATE Products SET Name = '" + request.NewName + "', Price = " + FormatWithComma(request.NewPrice) + " WHERE Id='" + request.Id + "';";
             CreateAndCommitTransaction(updateProductCommand);
         }
         private void CreateAndCommitTransaction(string command)
         {
+            Trace.WriteLine(command);
             using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction("NewProduct"))
             {
                 using (SqlCommand cmd = new SqlCommand(command, sqlConnection, sqlTransaction))
@@ -103,7 +105,11 @@ namespace WebApplicationProduct
                 }
             }
         }
-
+        private String FormatWithComma(decimal number)
+        {
+            System.Globalization.CultureInfo invariantCulture = System.Globalization.CultureInfo.InvariantCulture;
+            return number.ToString(invariantCulture);
+        }
     }
 
 }
