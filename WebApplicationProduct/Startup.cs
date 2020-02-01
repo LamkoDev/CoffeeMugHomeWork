@@ -26,8 +26,11 @@ namespace WebApplicationProduct
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                             .AddControllersAsServices(); // IMPORTANT: Adding this line instructs WebHost to resolve Controllers from DI (Unity)
+
             services.AddControllersWithViews();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

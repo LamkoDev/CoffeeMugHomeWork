@@ -5,13 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Unity;
 using WebApplicationProduct.Models;
-using MimeKit;
-using MailKit.Net.Smtp;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Data.SQLite;
-using System.Data.SqlClient;
-using System.Net;
 
 
 namespace WebApplicationProduct.Controllers
@@ -19,6 +14,10 @@ namespace WebApplicationProduct.Controllers
     [Produces("application/json")]
     public class ProductController : Controller//, IModelBinder
     {
+        public ProductController(IUnityContainer container)
+        {
+            Debug.Assert(null != container);
+        }
         public IActionResult Index()
         {
             ViewBag.Products = Get();
