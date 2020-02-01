@@ -10,8 +10,8 @@ namespace WebApplicationProduct.Models
     {
         [Required(ErrorMessage = "Prosze podać id")]
         [RegularExpression(@"(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$", ErrorMessage = "Enter a valid guid")]
-        
         public Guid Id { get; set; }
+
         [Required(ErrorMessage = "Prosze podać nazwę")]
         [StringLength(100, MinimumLength = 3)]
         public string NewName { get; set; }

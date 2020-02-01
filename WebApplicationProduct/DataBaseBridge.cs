@@ -11,9 +11,13 @@ namespace WebApplicationProduct
     public class DataBaseBridge
     {
         protected IDataBase DbImplementation;
-        public void UseSqlDbImplementation(string connectionString)
+        public void UseSqlDbImplementation()
         {
-            DbImplementation = new SqlDbApiConcrete(connectionString);
+            string server = @"DESKTOP-3L9UIL8\SQLEXPRESS";
+            string database = "CoffeeMugHomeWork";
+            string user = "Visual";
+            string password = "1231";
+            DbImplementation = new SqlDbApiConcrete(server,database,user,password);
         }
         public List<Models.Product> GetProducts() 
         {

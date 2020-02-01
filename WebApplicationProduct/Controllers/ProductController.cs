@@ -14,33 +14,37 @@ namespace WebApplicationProduct.Controllers
     [Produces("application/json")]
     public class ProductController : Controller//, IModelBinder
     {
+        DataBaseBridge dataBaseBridge;
         public ProductController(IUnityContainer container)
         {
+            dataBaseBridge = CreateAndSetDb();
             Debug.Assert(null != container);
+        }
+        private DataBaseBridge CreateAndSetDb()
+        {
+            DataBaseBridge dataBase = new DataBaseBridge();
+            dataBase.UseSqlDbImplementation();
+            return dataBase;
         }
         public IActionResult Index()
         {
             ViewBag.Products = Get();
             return View();
         }
-        DataBaseBridge dataBase = new DataBaseBridge();
-
-
         [HttpGet]
         [Route("~/GetAll")]
         public List<Product> Get()
         {
             Trace.WriteLine("Get");
-            DataBaseBridge dataBase = CreateAndSetDb();
-            return dataBase.GetProducts();
+          
+            return dataBaseBridge.GetProducts();
         }
         [HttpGet]
         [Route("~/Get")]
         public Product Get(Guid id)
         {
             Trace.WriteLine("Get id");
-            DataBaseBridge dataBase = CreateAndSetDb();
-            return dataBase.GetProduct(id);
+            return dataBaseBridge.GetProduct(id);
         }
         [HttpPost]
         [Route("~/Post")]
@@ -49,14 +53,12 @@ namespace WebApplicationProduct.Controllers
             if (ModelState.IsValid)
             {
             Trace.WriteLine("Post");
-                DataBaseBridge dataBase = CreateAndSetDb();
                 Response.StatusCode = 200;
-                return Content(dataBase.AddProduct(request).ToString());
+                return Content(dataBaseBridge.AddProduct(request).ToString());
             }
             Response.StatusCode = 400;
             return Content("Invalid request !!!");
         }
-
         [HttpPut]
         [Route("~/Put")]
         public IActionResult Put(ProductUpdateRequestDto request)
@@ -64,41 +66,25 @@ namespace WebApplicationProduct.Controllers
             if (ModelState.IsValid)
             {
                 Trace.WriteLine("Put");
-                DataBaseBridge dataBase = CreateAndSetDb();
-                dataBase.Update(request);
+                dataBaseBridge.Update(request);
                 return RedirectToAction("Index");
             }
             Response.StatusCode = 400;
             return Content("Invalid request !!!");
         }
-
-
         [HttpDelete]
         [Route("~/Delete")]
         public IActionResult Delete(Guid id)
         {
             Trace.WriteLine("Delete");
-            DataBaseBridge dataBase = CreateAndSetDb();
-            dataBase.Delete(id);
+            dataBaseBridge.Delete(id);
             return RedirectToAction("Index");
         }
         public IActionResult DeleteProduct(Guid id)
         {
             Trace.WriteLine("Delete");
-            DataBaseBridge dataBase = CreateAndSetDb();
-            dataBase.Delete(id);
+            dataBaseBridge.Delete(id);
             return RedirectToAction("Index");
-        }
-
-            private DataBaseBridge CreateAndSetDb()
-        {
-            DataBaseBridge dataBase = new DataBaseBridge();
-            string connectionString = @"Server = DESKTOP-3L9UIL8\SQLEXPRESS; " +
-                                       "Database = CoffeeMugHomeWork; " +
-                                       "User Id = Visual; " +
-                                       "Password = 1231;";
-            dataBase.UseSqlDbImplementation(connectionString);
-            return dataBase;
         }
         [HttpGet]
         public ViewResult AddForm()
@@ -107,10 +93,13 @@ namespace WebApplicationProduct.Controllers
         }
         public ViewResult AddForm(ProductCreateRequestDto request)
         {
-            Product product = new Product(request.Name, request.Price);
-            DataBaseBridge dataBase = CreateAndSetDb();
-            product.Id = dataBase.AddProduct(request);
-            return View("ProductAdded", product);
+            if (ModelState.IsValid)
+            {
+                Product product = new Product(request.Name, request.Price);
+                product.Id = dataBaseBridge.AddProduct(request);
+                return View("ProductAdded", product);
+            }
+            return View();
         }
         public ViewResult ProductAdded(Product request)
         {
@@ -125,8 +114,7 @@ namespace WebApplicationProduct.Controllers
         public ViewResult EditProduct(Guid id)
         {
             Trace.WriteLine("Edit");
-            DataBaseBridge dataBase = CreateAndSetDb();
-            Product product = dataBase.GetProduct(id);
+            Product product = dataBaseBridge.GetProduct(id);
             ProductUpdateRequestDto request = new ProductUpdateRequestDto();
             request.Id = product.Id;
             request.NewName = product.Name;
@@ -139,8 +127,7 @@ namespace WebApplicationProduct.Controllers
             if (ModelState.IsValid)
             {
                 Trace.WriteLine("doUpdate");
-                DataBaseBridge dataBase = CreateAndSetDb();
-                dataBase.Update(request);
+                dataBaseBridge.Update(request);
                 return View("ProductUpdated", request);
             }
             Trace.WriteLine("Not valid");
@@ -148,7 +135,11 @@ namespace WebApplicationProduct.Controllers
         }
         public ViewResult ProductUpdated(ProductUpdateRequestDto updatedProduct)
         {
-            return View("ProductUpdated", updatedProduct);
+            if (ModelState.IsValid)
+            {
+                return View("ProductUpdated", updatedProduct);
+            }
+            return View();
         }
         public IActionResult Contact()
         {

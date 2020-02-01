@@ -9,12 +9,13 @@ namespace WebApplicationProduct
     class SqlDbApiConcrete : IDataBase
     {
         SqlConnection sqlConnection;
-        public SqlDbApiConcrete(string ConnectionParams)
+        public SqlDbApiConcrete(string server, string database, string user, string password)
         {
-            sqlConnection = new SqlConnection
-            {
-                ConnectionString = ConnectionParams
-            };
+            string connectionString = @"Server = " + server +
+                           "; Database = " + database +
+                           "; User Id = " + user +
+                           "; Password = " + password;
+            sqlConnection = new SqlConnection(connectionString);
             sqlConnection.Open();
         }
         public void DeleteProduct(Guid id)
@@ -63,14 +64,10 @@ namespace WebApplicationProduct
         public Guid AddProduct(ProductCreateRequestDto request)
         {
             Guid id = new Guid();
-            addTransaction(request);
-            id = GetProductId(request);
-            return id;
-        }
-        private void addTransaction(ProductCreateRequestDto request)
-        {
             String addProductCommand = "INSERT INTO Products (Id,Name,Price) VALUES(default, '" + request.Name + "', " + FormatWithComma(request.Price) + ")";
             CreateAndCommitTransaction(addProductCommand);
+            id = GetProductId(request);
+            return id;
         }
         private Guid GetProductId(ProductCreateRequestDto request)
         {
